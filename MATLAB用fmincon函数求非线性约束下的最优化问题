@@ -1,0 +1,124 @@
+https://blog.csdn.net/weixin_44331401/article/details/94628424?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
+MATLAB用fmincon函数求非线性约束下的最优化问题
+
+nick16668 2019-07-04 16:28:43  11902  收藏 28
+分类专栏： MATLAB
+版权
+fmincon函数非线性约束下的最优化问题
+fmincon函数，既是求最小约束非线性多变量函数
+该函数被用于求如下函数的最小值
+
+语法如下:
+
+x = fmincon(fun,x0,A,b)
+x = fmincon(fun,x0,A,b,Aeq,beq)
+x = fmincon(fun,x0,A,b,Aeq,beq,lb,ub)
+x = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon)
+x = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon,options)
+x = fmincon(problem)
+[x,fval] = fmincon(…)
+[x,fval,exitflag] = fmincon(…)
+[x,fval,exitflag,output] = fmincon(…)
+[x,fval,exitflag,output,lambda] = fmincon(…)
+[x,fval,exitflag,output,lambda,grad]= fmincon(…)
+[x,fval,exitflag,output,lambda,grad,hessian]= fmincon(…)
+
+对于fmincon函数，其exitflag参数中的数字：
+
+1、一阶最优性条件满足容许范围
+2、X的变化小于容许范围
+3、目标函数的变化小于容许范围
+4、重要搜索方向小于规定的容许范围并且约束违背小于options.TolCon
+5、重要方向导数小于规定的容许范围并且约束违背小于options.TolCon
+0、到达最大迭代次数或到达函数评价
+-1、算法由输出函数终止
+-2、无可行点
+
+实例：求解下式的最小值
+
+
+
+%方式一：分成多个文件
+function f=fminxy(t)
+x=t(1);y=t(2);
+f=x*x*x-y*y*y+2*x*x+x*y;
+end
+%%以上代码生成fminxy文件
+function [c d]=fcontr(t)
+x=t(1);y=t(2);
+c=x*x+y*y-6;
+d=x*y-2;
+end
+%%以上文件生成fcontr文件
+>> [x,fval,exitflag]=fmincon('fminxy',[1 2],[],[],[],[],[],[],'fcontr')
+%fmincon(	fun,	x0, A, b,Aeq,beq,lb,ub, nonlcon) A是初始值，fmincon的初始值x0可以任意取，只要保证为实数就行。
+x =
+    0.8740     2.2882      %函数最小值时x,y的值
+fval =
+   -7.7858                        %函数最小值
+exitflag =
+     1                               %一阶最优性条件满足容许范围，既是结果正确
+
+%方式二：整合成一个文件
+function  x= findOpt(a,b) 
+x=fmincon(@(t) fminxy(t),[a b],[],[],[],[],[],[],@(t) fcontr(t))
+end
+ 
+function f=fminxy(t)
+x=t(1);y=t(2);
+f=x*x*x-y*y*y+2*x*x+x*y;
+end
+ 
+function [c d]=fcontr(t)
+x=t(1);y=t(2);
+c=x*x+y*y-6;
+d=x*y-2;
+end
+%以上代码生成findOpt文件
+>> x=findOpt(2,2)
+x =
+    0.8740   2.2882
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+该实例皆为在MATLAB R2014a运行所得，参考https://jingyan.baidu.com/album/6c67b1d69508b52787bb1edf.html?picindex=4
+————————————————
+版权声明：本文为CSDN博主「nick16668」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/weixin_44331401/java/article/details/94628424
