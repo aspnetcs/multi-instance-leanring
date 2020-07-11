@@ -1,0 +1,54 @@
+https://blog.csdn.net/qq_38784454/article/details/80329021
+多元函数求极值，万能函数——fmincon讲解
+
+苏打水的杯子 2018-05-15 20:55:41  39069  收藏 41
+分类专栏： 软件应用 文章标签： 函数fminconmatlab极小值极大值极值
+版权
+       matlab中的函数fmincon可用于求可以求取多元函数的极值，其约束包括五种：1、线性不等式
+约束；2、线性等式约束；3、变量约束；4、非线性不等式约束；5、非线性等式约束。
+
+其形式如下：x = fmincon(fun,x0,A,b,Aeq,beq,lb,ub,nonlcon)
+
+求解问题的标准型为
+min F(X)
+s.t
+AX <= b（线性不等式约束）
+AeqX = beq（线性等式约束）
+G(x) <= 0（非线性不等式约束）
+Ceq(X) = 0（非线性等式约束）
+lb <= X <= ub（变量约束）
+matalb实例：
+
+
+
+
+fxx.m
+
+clc
+clear
+close all
+fun=@(x)x(1)^2+x(2)^2+8;
+x0=rand(2,1);
+A=[];
+b=[];
+Aeq=[];
+beq=[];
+vlb=[0,0];
+vub=[];
+exitflag=1;
+[x,fval,exitflag]=fmincon(fun,x0,A,b,Aeq,beq,vlb,vub,'mycon')
+mycon.m
+
+function [g,ceq]=mycon(x)
+g=-x(1)^2+x(2);
+ceq=-x(1)-x(2)^2+2;
+
+
+
+
+
+
+
+————————————————
+版权声明：本文为CSDN博主「苏打水的杯子」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/qq_38784454/java/article/details/80329021
