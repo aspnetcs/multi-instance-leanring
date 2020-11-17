@@ -1,0 +1,215 @@
+https://ww2.mathworks.cn/help/stats/ranksum.html?requestedDomain=zh
+
+ranksum
+Wilcoxon rank sum testcollapse all in page
+Syntax
+p = ranksum(x,y)
+[p,h] = ranksum(x,y)
+[p,h,stats] = ranksum(x,y)
+[___] = ranksum(x,y,Name,Value)
+Description
+example
+p = ranksum(x,y) returns the p-value of a two-sided Wilcoxon rank sum test. ranksum tests the null hypothesis that data in x and y are samples from continuous distributions with equal medians, against the alternative that they are not. The test assumes that the two samples are independent. x and y can have different lengths.
+
+This test is equivalent to a Mann-Whitney U-test.
+
+example
+[p,h] = ranksum(x,y) also returns a logical value indicating the test decision. The result h = 1 indicates a rejection of the null hypothesis, and h = 0 indicates a failure to reject the null hypothesis at the 5% significance level.
+
+example
+[p,h,stats] = ranksum(x,y) also returns the structure stats with information about the test statistic.
+
+example
+[___] = ranksum(x,y,Name,Value) returns any of the output arguments in the previous syntaxes, for a rank sum test with additional options specified by one or more Name,Value pair arguments.
+
+Examples
+collapse all
+Test for Equal Median of Two Populations
+View MATLAB Command
+
+Test the hypothesis of equal medians for two independent unequal-sized samples.
+
+Generate sample data.
+
+rng('default') % for reproducibility
+x = unifrnd(0,1,10,1);
+y = unifrnd(0.25,1.25,15,1);
+These samples come from populations with identical distributions except for a shift of 0.25 in the location.
+
+Test the equality of medians of x and y.
+
+p = ranksum(x,y)
+p = 0.0375
+The
+-value of 0.0375 indicates that ranksum rejects the null hypothesis of equal medians at the default 5% significance level.
+
+Statistics of the Test for Two Population Medians
+View MATLAB Command
+
+Obtain the statistics of the test for the equality of two population medians.
+
+Load the sample data.
+
+load mileage
+Test if the mileage per gallon is the same for the first and second type of cars.
+
+[p,h,stats] = ranksum(mileage(:,1),mileage(:,2))
+p = 0.0043
+h = logical
+   1
+
+stats = struct with fields:
+    ranksum: 21.5000
+
+Both the
+-value, 0.043, and h = 1 indicate the rejection of the null hypothesis of equal medians at the default 5% significance level. Because the sample sizes are small (six each), ranksum calculates the
+-value using the exact method. The structure stats includes only the value of the rank sum test statistic.
+
+Increase in the Median
+View MATLAB Command
+
+Test the hypothesis of an increase in the population median.
+
+Load the sample data.
+
+load('weather.mat');
+The weather data shows the daily high temperatures taken in the same month in two consecutive years.
+
+Perform a left-sided test to assess the increase in the median at the 1% significance level.
+
+[p,h,stats] = ranksum(year1,year2,'alpha',0.01,...
+'tail','left')
+p = 0.1271
+h = logical
+   0
+
+stats = struct with fields:
+       zval: -1.1403
+    ranksum: 837.5000
+
+Both the
+-value of 0.1271 and h = 0 indicate that there is not enough evidence to reject the null hypothesis and conclude that there is a positive shift in the median of observed high temperatures in the same month from year 1 to year 2 at the 1% significance level. Notice that ranksum uses the approximate method to calculate the
+-value due to the large sample sizes.
+
+Use the exact method to calculate the
+-value.
+
+[p,h,stats] = ranksum(year1,year2,'alpha',0.01,...
+'tail','left','method','exact')
+p = 0.1273
+h = logical
+   0
+
+stats = struct with fields:
+    ranksum: 837.5000
+
+The results of the approximate and exact methods are consistent with each other.
+
+Input Arguments
+collapse all
+x — Sample data
+vector
+Sample data, specified as a vector.
+
+Data Types: single | double
+
+y — Sample data
+vector
+Sample data, specified as a vector. The length of y does not have to be the same as the length of x.
+
+Data Types: single | double
+
+Name-Value Pair Arguments
+Specify optional comma-separated pairs of Name,Value arguments. Name is the argument name and Value is the corresponding value. Name must appear inside quotes. You can specify several name and value pair arguments in any order as Name1,Value1,...,NameN,ValueN.
+
+Example: 'alpha',0.01,'method','approximate','tail','right' specifies a right-tailed rank sum test with 1% significance level, which returns the approximate p-value.
+'alpha' — Significance level
+0.05 (default) | scalar value in the range 0 to 1
+Significance level of the decision of a hypothesis test, specified as the comma-separated pair consisting of 'alpha' and a scalar value in the range 0 to 1. The significance level of h is 100 * alpha%.
+
+Example: 'alpha', 0.01
+
+Data Types: double | single
+
+'method' — Computation method of the p-value
+'exact' | 'approximate'
+Computation method of the p-value, p, specified as the comma-separated pair consisting of 'method' and one of the following:
+
+'exact'	Exact computation of the p-value, p.
+'approximate'	Normal approximation while computing the p-value, p.
+When 'method' is unspecified, the default is:
+
+'exact' if min(nx,ny) < 10 and nx + ny < 20
+
+'approximate' otherwise
+
+nx and ny are the sizes of the samples in x and y, respectively.
+
+Example: 'method','exact'
+
+'tail' — Type of test
+'both' (default) | 'right' | 'left'
+Type of test, specified as the comma-separated pair consisting of 'tail' and one of the following:
+
+'both'	Two-sided hypothesis test, where the alternative hypothesis states that x and y have different medians. Default test type if 'tail' is not specified.
+'right'	Right-tailed hypothesis test, where the alternative hypothesis states that the median of x is greater than the median of y.
+'left'	Left-tailed hypothesis test, where the alternative hypothesis states that the median of x is less than the median of y.
+Example: 'tail','left'
+
+Output Arguments
+collapse all
+p — p-value of the test
+nonnegative scalar
+p-value of the test, returned as a positive scalar from 0 to 1. p is the probability of observing a test statistic as or more extreme than the observed value under the null hypothesis. ranksum computes the two-sided p-value by doubling the most significant one-sided value.
+
+h — Result of the hypothesis test
+1 | 0
+Result of the hypothesis test, returned as a logical value.
+
+If h = 1, this indicates rejection of the null hypothesis at the 100 * alpha% significance level.
+
+If h = 0, this indicates a failure to reject the null hypothesis at the 100 * alpha% significance level.
+
+stats — Test statistics
+structure
+Test statistics, returned as a structure. The test statistics stored in stats are:
+
+ranksum : Value of the rank sum test statistic
+
+zval: Value of the z-statistic (computed when 'method' is 'approximate')
+
+More About
+collapse all
+Wilcoxon Rank Sum Test
+The Wilcoxon rank sum test is a nonparametric test for two populations when samples are independent. If X and Y are independent samples with different sample sizes, the test statistic which ranksum returns is the rank sum of the first sample.
+
+The Wilcoxon rank sum test is equivalent to the Mann-Whitney U-test. The Mann-Whitney U-test is a nonparametric test for equality of population medians of two independent samples X and Y.
+
+The Mann-Whitney U-test statistic, U, is the number of times a y precedes an x in an ordered arrangement of the elements in the two independent samples X and Y. It is related to the Wilcoxon rank sum statistic in the following way: If X is a sample of size nX, then
+
+
+z-Statistic
+For large samples, ranksum uses a z-statistic to compute the approximate p-value of the test.
+
+If X and Y are two independent samples of size nX and nY, where nX < nY the z-statistic is
+
+
+with continuity correction and tie adjustment. Here tiescor is given by
+
+
+where ranksum uses [ranks,tieadj] = tiedrank(x,y) to obtain tie adjustments. The standard normal distribution gives the p-value for this z-statistic.
+
+Algorithms
+ranksum treats NaNs in x and y as missing values and ignores them.
+
+For a two-sided test of medians with unequal sample sizes, the test statistic that ranksum returns is the rank sum of the first sample.
+
+References
+[1] Gibbons, J. D., and S. Chakraborti. Nonparametric Statistical Inference, 5th Ed., Boca Raton, FL: Chapman & Hall/CRC Press, Taylor & Francis Group, 2011.
+
+[2] Hollander, M., and D. A. Wolfe. Nonparametric Statistical Methods. Hoboken, NJ: John Wiley & Sons, Inc., 1999.
+
+See Also
+kruskalwallis | signrank | signtest | ttest2
+
+Introduced before R2006a
